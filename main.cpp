@@ -41,7 +41,6 @@ int main() {
   for (auto item : matrix)
     cout << item.first << " = " << item.second << endl;
 
-  cout << "//-------------------" << endl;
 
   return 0;
 }
