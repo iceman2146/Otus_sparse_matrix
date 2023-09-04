@@ -1,5 +1,4 @@
 #pragma once
-
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -7,54 +6,26 @@
 #include <map>
 #include <memory>
 #include <utility>
-
-using namespace std;
-
-template <size_t N> class Coordinates {
-public:
-  int dimensions[N];
-
-public:
-  Coordinates() = default;
-  Coordinates(const Coordinates<N> &) = default;
-  Coordinates(Coordinates<N> &&) = default;
-  template <typename... Args> Coordinates(Args... args) {
-    const int argc = sizeof...(args);
-    int t[argc] = {(args)...};
-    memcpy(dimensions, t, sizeof(dimensions));
-  }
-
-  bool operator<(const Coordinates<N> &ob) const {
-
-    return lexicographical_compare(dimensions, dimensions + N, ob.dimensions,
-                                   ob.dimensions + N);
-  }
-};
-
-template <size_t N> ostream &operator<<(ostream &s, const Coordinates<N> &ob) {
-  cout << "(";
-  for (int i = 0; i < N; i++)
-    cout << ob.dimensions[i] << ((i < N - 1) ? ";" : ")");
-  return s;
-}
+#include "Coordinate_struct.h"
 
 template <typename T, const T DefVal, size_t N = 2> class Matrix {
   Coordinates<N> key;
-  pair<Coordinates<N>, T> DefPair;
+  std::pair<Coordinates<N>, T> DefPair;
   T DefValForRes;
-  map<Coordinates<N>, T> data;
+  std::map<Coordinates<N>, T> data;
 
   class flat_iterator {
-    typename map<Coordinates<N>, T>::iterator it;
+    typename std::map<Coordinates<N>, T>::iterator it;
 
   public:
-    flat_iterator(typename map<Coordinates<N>, T>::iterator _it) : it(_it) {}
+    flat_iterator(typename std::map<Coordinates<N>, T>::iterator _it) : it(_it) {}
     bool operator!=(const flat_iterator &_it) { return it != _it.it; }
     void operator++() { ++it; }
     auto &operator*() { return *it; }
   };
 
-  class ProxyAtOnce {
+  class ProxyAtOnce 
+  {
     Matrix &self;
     Coordinates<N> key;
 
@@ -70,16 +41,17 @@ template <typename T, const T DefVal, size_t N = 2> class Matrix {
       return *this;
     }
 
-    ProxyAtOnce &operator=(const ProxyAtOnce &ob) {
+    ProxyAtOnce &operator=(const ProxyAtOnce &coord) {
 
-      *this = static_cast<T>(ob);
+      *this = static_cast<T>(coord);
       return *this;
     }
 
     operator T() const { return self.GetRefVal(key); }
   };
 
-  template <int P, typename Dummy = void> class SubProxy {
+  template <int P, typename Dummy = void> 
+  class SubProxy {
   private:
     Matrix &self;
 
@@ -91,7 +63,9 @@ template <typename T, const T DefVal, size_t N = 2> class Matrix {
     }
   };
 
-  template <typename Dummy> class SubProxy<N - 2, Dummy> {
+  template <typename Dummy> 
+  class SubProxy<N - 2, Dummy> 
+  {
     Matrix &self;
 
   public:
@@ -106,9 +80,7 @@ public:
   size_t size() { return data.size(); }
 
   template <typename... Args> void SetValue(const T &Value, Args... args);
-
   template <typename... Args> T &GetValue(Args... args);
-
   template <typename... Args> T &GetRefVal(Args... args);
 
   T &GetRefVal(Coordinates<N> key);
