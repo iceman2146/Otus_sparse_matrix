@@ -1,11 +1,7 @@
-#include <iostream>
-
 #include "matrix.h"
 
 using namespace std;
 int main() {
-
-  cout << endl << "MainTask" << endl;
 
   const int N = 10;
 
@@ -40,7 +36,6 @@ int main() {
 
   for (auto item : matrix)
     cout << item.first << " = " << item.second << endl;
-
 
   return 0;
 }

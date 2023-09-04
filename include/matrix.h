@@ -5,21 +5,20 @@
 #include <iostream>
 #include <iterator>
 #include <map>
-#include <memory.h>
+#include <memory>
 #include <utility>
 
 using namespace std;
 
-template <size_t N > 
-class Coordinates {
-private:
-  int dimensions[N];
+template <size_t N> class Coordinates {
 public:
+  int dimensions[N];
 
+public:
   Coordinates() = default;
-
-  template <typename... Args> Coordinates(Args... args) 
-  {
+  Coordinates(const Coordinates<N> &) = default;
+  Coordinates(Coordinates<N> &&) = default;
+  template <typename... Args> Coordinates(Args... args) {
     const int argc = sizeof...(args);
     int t[argc] = {(args)...};
     memcpy(dimensions, t, sizeof(dimensions));
@@ -32,25 +31,20 @@ public:
   }
 };
 
-template <size_t N >
-ostream &operator<<(ostream &s, const Coordinates<N> &ob) {
+template <size_t N> ostream &operator<<(ostream &s, const Coordinates<N> &ob) {
   cout << "(";
   for (int i = 0; i < N; i++)
     cout << ob.dimensions[i] << ((i < N - 1) ? ";" : ")");
   return s;
 }
 
-template <typename T, const T DefVal, size_t N = 2>
- class Matrix 
- {
-private:
+template <typename T, const T DefVal, size_t N = 2> class Matrix {
+  Coordinates<N> key;
   pair<Coordinates<N>, T> DefPair;
   T DefValForRes;
   map<Coordinates<N>, T> data;
-  Coordinates<N> key;
 
   class flat_iterator {
-  private:
     typename map<Coordinates<N>, T>::iterator it;
 
   public:
@@ -61,8 +55,6 @@ private:
   };
 
   class ProxyAtOnce {
-
-  private:
     Matrix &self;
     Coordinates<N> key;
 
@@ -87,30 +79,24 @@ private:
     operator T() const { return self.GetRefVal(key); }
   };
 
-  template <int P, typename Dummy = void> 
-  class SubProxy {
+  template <int P, typename Dummy = void> class SubProxy {
   private:
     Matrix &self;
 
   public:
-    SubProxy(Matrix &_matrix) : self(_matrix) {}
+    SubProxy(Matrix &_matrix) : self(_matrix){};
     SubProxy<P + 1> operator[](int i) {
       self.key.dimensions[P + 1] = i;
       return SubProxy<P + 1>(self);
     }
   };
 
-  template <typename Dummy> 
-  class SubProxy<N - 2, Dummy> 
-  {
-  private:
+  template <typename Dummy> class SubProxy<N - 2, Dummy> {
     Matrix &self;
 
   public:
     SubProxy(Matrix &_matrix) : self(_matrix) {}
-
-    ProxyAtOnce operator[](int i) 
-    {
+    ProxyAtOnce operator[](int i) {
       self.key.dimensions[N - 1] = i;
       return ProxyAtOnce(self, self.key);
     }
@@ -119,7 +105,7 @@ private:
 public:
   size_t size() { return data.size(); }
 
-  template <typename... Args> void 22(const T &Value, Args... args);
+  template <typename... Args> void SetValue(const T &Value, Args... args);
 
   template <typename... Args> T &GetValue(Args... args);
 
@@ -166,7 +152,7 @@ T &Matrix<T, DefVal, N>::GetRefVal(Coordinates<N> key) {
 
 template <typename T, T DefVal, size_t N>
 template <typename... Args>
-void Matrix<T, DefVal, N>::r fasdsaSetValue(const T &Value, Args... args) {
+void Matrix<T, DefVal, N>::SetValue(const T &Value, Args... args) {
   assert(N == sizeof...(args));
   int realArgs[sizeof...(args)] = {(args)...};
 
@@ -207,5 +193,3 @@ T &Matrix<T, DefVal, N>::GetValue(Args... args) {
     return DefPair.second;
   }
 }
-
-
