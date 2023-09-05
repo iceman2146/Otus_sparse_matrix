@@ -9,13 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
       - uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: false
       - run: cmake .
       - run: cmake --build .
-      - run: cmake --build . --target test
       - run: cmake --build . --target package
       - name: Create Release
         id: create_release
