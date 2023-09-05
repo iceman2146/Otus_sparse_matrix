@@ -18,7 +18,7 @@ public:
     {
         const int count = sizeof...(args);
         int cap[count] = {(args)...};
-        memcpy(dimensions, t, sizeof(dimensions));
+        memcpy(dimensions, cap, sizeof(dimensions));
     }
 
     bool operator<(const Coordinates<N> &coord) const
