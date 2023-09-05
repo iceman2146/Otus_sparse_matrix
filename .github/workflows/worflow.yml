@@ -2,11 +2,11 @@ name: SparceMatrix
 
 on:
   push:
-    branches: [ "new" ]
+    branches: main
     tags:
       - '*'
   pull_request:
-    branches: [ "new" ]
+    branches: main
 
 env:
   BUILD_TYPE: Release
