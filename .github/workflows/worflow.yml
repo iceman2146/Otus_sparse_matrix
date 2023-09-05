@@ -26,7 +26,11 @@ jobs:
       run: cmake --build . --config Release
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
       with:
-        name: My-Artifact
-        path: ${{github.workspace}}/build/
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Infinite_matrix.${{ github.run_number }}-Linux.deb
+          asset_name: Infinite_matrix.${{ github.run_number }}-Linux.deb
+          asset_content_type: application/vnd.debian.binary-package
